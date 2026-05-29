@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Emocional - Life Estética</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a2e4a 0%, #2d5a7b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1a2e4a;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .intro {
+            background: #FDF6E3;
+            border-left: 4px solid #b8922a;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        
+        .intro h2 {
+            color: #1a2e4a;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .intro p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+        }
+        
+        .section-title {
+            background: #EAF0F6;
+            color: #1a2e4a;
+            padding: 15px 20px;
+            border-left: 4px solid #b8922a;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            color: #1a2e4a;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #b8922a;
+            box-shadow: 0 0 5px rgba(184, 146, 42, 0.3);
+        }
+        
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            gap: 10px;
+        }
+        
+        .likert-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .likert-btn:hover {
+            border-color: #b8922a;
+            background: #FDF6E3;
+        }
+        
+        .likert-btn.selected {
+            background: #b8922a;
+            color: white;
+            border-color: #b8922a;
+        }
+        
+        .question-number {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit {
+            background: #b8922a;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #9a7820;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 146, 42, 0.3);
+        }
+        
+        .btn-reset {
+            background: #ccc;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #aaa;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #1a2e4a;
+            font-weight: bold;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #b8922a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-msg {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error-msg {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .demographic-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .demographic-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .likert-scale {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mapa Emocional</h1>
+            <p>Life Estética</p>
+        </div>
+        
+        <div class="content">
+            <div class="success-msg" id="successMsg">
+                ✓ Obrigada! Seus dados foram enviados com sucesso.
+                <br><small>Sua opinião é muito importante para nós.</small>
+            </div>
+            
+            <div class="error-msg" id="errorMsg">
+                ✗ Erro ao enviar. Tente novamente.
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Enviando dados...</p>
+            </div>
+            
+            <div class="intro">
+                <h2>Bem-vindo!</h2>
+                <p>Este mapa emocional ajuda a compreender melhor seus sentimentos, bem-estar e características pessoais. Suas respostas são confidenciais e serão usadas apenas para melhorar o ambiente de trabalho. Obrigada por sua sinceridade!</p>
+            </div>
+            
+            <form id="mapForm">
+                <!-- DADOS DEMOGRÁFICOS -->
+                <div class="section">
+                    <div class="section-title">Dados Demográficos</div>
+                    
+                    <div class="demographic-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome (opcional)</label>
+                            <input type="text" class="form-control" id="nome" placeholder="Seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Idade</label>
+                            <input type="number" class="form-control" id="idade" placeholder="Ex: 28" min="18" max="80">
+                        </div>
+                    </div>
+                    
+                    <div class="demographic-row">
+                        <div class="form-group">
+                            <label class="form-label">Cargo/Função</label>
+                            <input type="text" class="form-control" id="cargo" placeholder="Ex: Esteticista">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tempo na empresa (meses)</label>
+                            <input type="number" class="form-control" id="tempo_empresa" placeholder="Ex: 12" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- BIG FIVE 40 ITENS -->
+                <div class="section">
+                    <div class="section-title">Personalidade e Características (TIPI-40)</div>
+                    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Indique seu grau de concordância com cada afirmação. 1 = Discordo totalmente | 5 = Concordo totalmente</p>
+                    
+                    <!-- ABERTURA À EXPERIÊNCIA (8 itens) -->
+                    <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #b8922a;">
+                        <h3 style="color: #1a2e4a; margin-bottom: 20px; font-size: 15px;">Abertura à Experiência</h3>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 1</div>
+                            <label class="form-label">Gosto de explorar ideias novas e não convencionais</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_1">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_1">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_1">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_1">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_1">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 2</div>
+                            <label class="form-label">Prefiro rotina do que tentar coisas diferentes</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_2">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_2">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_2">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_2">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_2">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 3</div>
+                            <label class="form-label">Sou criativo e gosto de imaginação</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_3">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_3">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_3">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_3">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_3">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 4</div>
+                            <label class="form-label">Tenho interesse em arte, música e literatura</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_4">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_4">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_4">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_4">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_4">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 5</div>
+                            <label class="form-label">Prefiro um trabalho simples do que um complexo</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_5">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_5">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_5">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_5">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_5">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 6</div>
+                            <label class="form-label">Sou inovador e gosto de novidades</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_6">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_6">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_6">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_6">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_6">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 7</div>
+                            <label class="form-label">Tenho dificuldade em compreender ideias abstratas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_7">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_7">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_7">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_7">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_7">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 8</div>
+                            <label class="form-label">Gosto de aprender coisas novas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_8">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_8">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_8">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_8">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_8">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CONSCIENCIOSIDADE (8 itens) -->
+                    <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #b8922a;">
+                        <h3 style="color: #1a2e4a; margin-bottom: 20px; font-size: 15px;">Conscienciosidade</h3>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 9</div>
+                            <label class="form-label">Sou organizado e detalhista</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_9">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_9">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_9">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_9">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_9">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 10</div>
+                            <label class="form-label">Deixo as coisas para depois</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_10">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_10">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_10">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_10">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_10">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 11</div>
+                            <label class="form-label">Sou responsável e confiável</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_11">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_11">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_11">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_11">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_11">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 12</div>
+                            <label class="form-label">Sou negligente no meu trabalho</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_12">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_12">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_12">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_12">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_12">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 13</div>
+                            <label class="form-label">Sou disciplinado e sigo planos</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_13">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_13">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_13">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_13">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_13">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 14</div>
+                            <label class="form-label">Tenho dificuldade em completar tarefas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_14">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_14">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_14">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_14">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_14">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 15</div>
+                            <label class="form-label">Sou meticuloso nos detalhes</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_15">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_15">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_15">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_15">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_15">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 16</div>
+                            <label class="form-label">Sou desorganizado</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_16">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_16">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_16">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_16">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_16">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- EXTROVERSÃO (8 itens) -->
+                    <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #b8922a;">
+                        <h3 style="color: #1a2e4a; margin-bottom: 20px; font-size: 15px;">Extroversão</h3>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 17</div>
+                            <label class="form-label">Sou sociável e gosto de estar com pessoas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_17">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_17">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_17">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_17">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_17">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 18</div>
+                            <label class="form-label">Prefiro estar sozinho</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_18">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_18">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_18">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_18">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_18">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 19</div>
+                            <label class="form-label">Sou conversador e comunicativo</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_19">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_19">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_19">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_19">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_19">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 20</div>
+                            <label class="form-label">Tenho dificuldade em iniciar conversas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_20">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_20">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_20">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_20">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_20">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 21</div>
+                            <label class="form-label">Gosto de ser o centro das atenções</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_21">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_21">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_21">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_21">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_21">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 22</div>
+                            <label class="form-label">Sou tímido</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_22">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_22">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_22">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_22">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_22">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 23</div>
+                            <label class="form-label">Sou energético e entusiasmado</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_23">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_23">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_23">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_23">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_23">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 24</div>
+                            <label class="form-label">Tenho dificuldade em socializar</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_24">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_24">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_24">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_24">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_24">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AGRADABILIDADE (8 itens) -->
+                    <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #b8922a;">
+                        <h3 style="color: #1a2e4a; margin-bottom: 20px; font-size: 15px;">Agradabilidade</h3>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 25</div>
+                            <label class="form-label">Sou empático e me importo com os outros</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_25">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_25">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_25">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_25">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_25">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 26</div>
+                            <label class="form-label">Sou competitivo e busco ganhar</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_26">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_26">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_26">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_26">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_26">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 27</div>
+                            <label class="form-label">Sou cooperativo e trabalho bem em equipe</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_27">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_27">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_27">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_27">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_27">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 28</div>
+                            <label class="form-label">Tenho dificuldade em confiar nas pessoas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_28">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_28">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_28">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_28">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_28">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 29</div>
+                            <label class="form-label">Sou generoso e altruísta</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_29">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_29">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_29">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_29">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_29">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 30</div>
+                            <label class="form-label">Sou agressivo em discussões</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_30">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_30">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_30">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_30">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_30">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 31</div>
+                            <label class="form-label">Sou compreensivo e tolerante</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_31">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_31">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_31">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_31">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_31">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 32</div>
+                            <label class="form-label">Tenho dificuldade em aceitar críticas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_32">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_32">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_32">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_32">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_32">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NEUROTICISMO (8 itens) -->
+                    <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #b8922a;">
+                        <h3 style="color: #1a2e4a; margin-bottom: 20px; font-size: 15px;">Estabilidade Emocional / Neuroticismo</h3>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 33</div>
+                            <label class="form-label">Sou nervoso e preocupado</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_33">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_33">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_33">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_33">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_33">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 34</div>
+                            <label class="form-label">Sou calmo e relaxado</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_34">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_34">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_34">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_34">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_34">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 35</div>
+                            <label class="form-label">Fico ansioso com facilidade</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_35">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_35">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_35">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_35">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_35">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 36</div>
+                            <label class="form-label">Sou desconfortável em situações sociais</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_36">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_36">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_36">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_36">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_36">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 37</div>
+                            <label class="form-label">Tenho oscilações emocionais frequentes</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_37">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_37">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_37">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_37">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_37">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 38</div>
+                            <label class="form-label">Sou tranquilo sob pressão</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_38">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_38">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_38">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_38">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_38">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 39</div>
+                            <label class="form-label">Sou sensível a críticas</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_39">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_39">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_39">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_39">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_39">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="question-number">Questão 40</div>
+                            <label class="form-label">Sou emotivo e reativo</label>
+                            <div class="likert-scale">
+                                <button type="button" class="likert-btn" data-value="1" data-question="bf_40">1</button>
+                                <button type="button" class="likert-btn" data-value="2" data-question="bf_40">2</button>
+                                <button type="button" class="likert-btn" data-value="3" data-question="bf_40">3</button>
+                                <button type="button" class="likert-btn" data-value="4" data-question="bf_40">4</button>
+                                <button type="button" class="likert-btn" data-value="5" data-question="bf_40">5</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QUESTÕES QUALITATIVAS -->
+                <div class="section">
+                    <div class="section-title">Suas Perspectivas Pessoais</div>
+                    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Respostas abertas. Seja sincero e detalhado.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">1. Como a pressão de metas afeta sua saúde mental e bem-estar?</label>
+                        <textarea class="form-control" id="qual_1" placeholder="Sua resposta..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">2. Como você descreve o relacionamento e o clima com sua equipe?</label>
+                        <textarea class="form-control" id="qual_2" placeholder="Sua resposta..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">3. Como você se sente reconhecido e valorizado profissionalmente?</label>
+                        <textarea class="form-control" id="qual_3" placeholder="Sua resposta..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">4. Como você avalia o equilíbrio entre sua vida profissional e pessoal?</label>
+                        <textarea class="form-control" id="qual_4" placeholder="Sua resposta..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">5. Como você descreve sua saúde mental, níveis de ansiedade e bem-estar atual?</label>
+                        <textarea class="form-control" id="qual_5" placeholder="Sua resposta..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">6. Quais são suas expectativas de crescimento profissional e futuro na empresa?</label>
+                        <textarea class="form-control" id="qual_6" placeholder="Sua resposta..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- BOTÕES -->
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">Enviar Respostas</button>
+                    <button type="reset" class="btn-reset">Limpar Formulário</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const answers = {};
+        
+        // Adicionar listeners aos botões Likert
+        document.querySelectorAll('.likert-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const question = btn.dataset.question;
+                const value = btn.dataset.value;
+                
+                answers[question] = value;
+                
+                const group = btn.parentElement.parentElement;
+                group.querySelectorAll('.likert-btn').forEach(b => {
+                    b.classList.remove('selected');
+                });
+                btn.classList.add('selected');
+            });
+        });
+        
+        // Adicionar listener ao formulário
+        document.getElementById('mapForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                nome: document.getElementById('nome').value || 'Anônimo',
+                idade: document.getElementById('idade').value,
+                cargo: document.getElementById('cargo').value,
+                tempo_empresa: document.getElementById('tempo_empresa').value,
+                ...answers,
+                qual_1: document.getElementById('qual_1').value,
+                qual_2: document.getElementById('qual_2').value,
+                qual_3: document.getElementById('qual_3').value,
+                qual_4: document.getElementById('qual_4').value,
+                qual_5: document.getElementById('qual_5').value,
+                qual_6: document.getElementById('qual_6').value
+            };
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbykw1DSqHTRw3V3B10exukQ8X1c_iqa9SpwlwuGkaFASaQ6elF-T0aiOcA9s8n2-NV07w/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+                document.getElementById('mapForm').reset();
+                Object.keys(answers).forEach(key => delete answers[key]);
+                document.querySelectorAll('.likert-btn.selected').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                }, 300);
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
